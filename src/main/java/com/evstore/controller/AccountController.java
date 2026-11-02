@@ -34,7 +34,7 @@ public class AccountController {
             responseBody.put("customerId", created.getId());
             responseBody.put("username", created.getUsername());
 
-            // return HTTP 201 Created
+            //return HTTP 201 Created
             return ResponseEntity.status(HttpStatus.CREATED).body(responseBody);
 
         } catch (IllegalArgumentException ex) {
@@ -47,7 +47,7 @@ public class AccountController {
         }
     }
 
-    // UC14 - Sign In: verifies credentials and sets up session
+    // UC14--> Sign In: verifies credentials and sets up session
     @PostMapping("/login")
     public ResponseEntity<?> loginCustomer(@RequestBody LoginRequest req, HttpSession session) {
         try {
@@ -82,7 +82,6 @@ public class AccountController {
 
         Map<String, String> responseBody = new HashMap<>();
         responseBody.put("message", "Logged out successfully.");
-
         return ResponseEntity.ok(responseBody);
     }
 
@@ -93,6 +92,7 @@ public class AccountController {
 
         if (currentCustomer == null) {
             Map<String, Object> responseBody = new HashMap<>();
+            
             responseBody.put("loggedIn", false);
             responseBody.put("message", "No active session.");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseBody);

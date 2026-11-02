@@ -17,6 +17,8 @@ public class TestDriveBooking {
     @Column(nullable = false)
     private Long customerId;
 
+    
+    
     // EV vehicle model selected
     @Column(nullable = false)
     private String carModel;
@@ -50,6 +52,7 @@ public class TestDriveBooking {
         this.timeSlot = timeSlot;
         this.testDriveType = testDriveType;
         this.deliveryAddress = deliveryAddress;
+        
         this.status = status;
     }
 

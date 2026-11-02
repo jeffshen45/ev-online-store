@@ -16,7 +16,7 @@ public class ConfigSecurity {
         return new BCryptPasswordEncoder();
     }
 
-    // configure basic security rules
+    //configure basic security rules
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         // disable csrf for easy postman / form testing

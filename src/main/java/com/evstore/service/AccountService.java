@@ -24,9 +24,7 @@ public class AccountService {
     public Customer register(RegistrationRequest request) {
 
         // check that required fields are not empty
-        if (request.getUsername() == null || request.getUsername().trim().isEmpty() ||
-            request.getEmail() == null || request.getEmail().trim().isEmpty() ||
-            request.getPassword() == null || request.getPassword().trim().isEmpty()) {
+        if (request.getUsername() == null || request.getUsername().trim().isEmpty() || request.getEmail() == null || request.getEmail().trim().isEmpty() ||request.getPassword() == null || request.getPassword().trim().isEmpty()) {
             throw new IllegalArgumentException("Username, email, and password are all required.");
         }
 
@@ -44,13 +42,9 @@ public class AccountService {
         String hashedPassword = encoder.encode(request.getPassword());
 
         // create customer object to persist
-        Customer customerToSave = new Customer(
-            request.getUsername().trim(),
-            request.getEmail().trim(),
-            hashedPassword,
-            request.getAddress() != null ? request.getAddress().trim() : null
-        );
+        Customer customerToSave = new Customer(request.getUsername().trim(), request.getEmail().trim(),hashedPassword,request.getAddress() != null ? request.getAddress().trim() : null);
 
+        
         // store in the db and return the created record
         return customerRepo.save(customerToSave);
     }
@@ -59,8 +53,7 @@ public class AccountService {
     public Customer signIn(LoginRequest request) {
 
         // check that required fields are not empty
-        if (request.getEmail() == null || request.getEmail().trim().isEmpty() ||
-            request.getPassword() == null || request.getPassword().trim().isEmpty()) {
+        if (request.getEmail() == null || request.getEmail().trim().isEmpty() ||request.getPassword() == null || request.getPassword().trim().isEmpty()) {
             throw new IllegalArgumentException("Email and password are both required.");
         }
 

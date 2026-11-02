@@ -15,10 +15,5 @@ public interface TestDriveRepository extends JpaRepository<TestDriveBooking, Lon
     List<TestDriveBooking> findByCustomerId(Long customerId);
 
     // check if a car is already booked on a specific date and time slot to prevent conflicts
-    boolean existsByCarModelAndBookingDateAndTimeSlotAndStatus(
-        String carModel, 
-        LocalDate bookingDate, 
-        String timeSlot, 
-        String status
-    );
+    boolean existsByCarModelAndBookingDateAndTimeSlotAndStatus(String carModel, LocalDate bookingDate, String timeSlot, String status );
 }

@@ -22,10 +22,10 @@ public class TestDriveController {
     @Autowired
     private TestDriveService testDriveService;
 
-    // UC06 - Schedule Test Drive endpoint
+    // UC06--> Schedule Test Drive endpoint
     @PostMapping("/book")
     public ResponseEntity<?> scheduleTestDrive(@RequestBody TestDriveRequest req, HttpSession session) {
-        // verify active customer session
+        //verify active customer session
         Customer loggedInCustomer = (Customer) session.getAttribute("LOGGED_IN_CUSTOMER");
         if (loggedInCustomer == null) {
             Map<String, String> error = new HashMap<>();
@@ -34,7 +34,7 @@ public class TestDriveController {
         }
 
         try {
-            // delegate booking logic to service layer
+            //delegate booking logic to service layer
             TestDriveBooking booking = testDriveService.scheduleBooking(loggedInCustomer.getId(), req);
 
             Map<String, Object> responseBody = new HashMap<>();
@@ -65,7 +65,6 @@ public class TestDriveController {
             error.put("error", "You must be signed in to view bookings.");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
         }
-
         List<TestDriveBooking> bookings = testDriveService.getCustomerBookings(loggedInCustomer.getId());
         return ResponseEntity.ok(bookings);
     }

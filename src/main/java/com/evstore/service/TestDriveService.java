@@ -54,12 +54,7 @@ public class TestDriveService {
         }
 
         // check if this specific vehicle is already booked for this slot
-        boolean slotTaken = testDriveRepo.existsByCarModelAndBookingDateAndTimeSlotAndStatus(
-            request.getCarModel().trim(),
-            parsedDate,
-            request.getTimeSlot().trim(),
-            "CONFIRMED"
-        );
+        boolean slotTaken = testDriveRepo.existsByCarModelAndBookingDateAndTimeSlotAndStatus(request.getCarModel().trim(),parsedDate,request.getTimeSlot().trim(), "CONFIRMED");
 
         if (slotTaken) {
             throw new IllegalArgumentException("This car is already booked for the selected date and time slot.");
@@ -79,6 +74,7 @@ public class TestDriveService {
         // persist booking to database
         TestDriveBooking savedBooking = testDriveRepo.save(bookingToSave);
 
+        
         // trigger automated reminder log
         sendBookingReminder(savedBooking);
         return savedBooking;
