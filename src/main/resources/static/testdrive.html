@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EV Store - Schedule Test Drive</title>
+</head>
+<body>
+
+    <!-- simple heading for PB11 / UC06 -->
+    <h1>Schedule a Test Drive</h1>
+    <p>Select your electric vehicle, date, and preferred test drive location.</p>
+
+    <!-- booking form -->
+    <form id="bookingForm">
+        <div>
+            <label for="carModel">Select EV Model:</label><br>
+            <select id="carModel" name="carModel">
+                <option value="Model S Plaid">Model S Plaid</option>
+                <option value="Model 3 Long Range">Model 3 Long Range</option>
+                <option value="Cybertruck AWD">Cybertruck AWD</option>
+                <option value="Ioniq 5">Ioniq 5</option>
+                <option value="EV6 GT">EV6 GT</option>
+            </select>
+        </div>
+        <br>
+        <div>
+            <label for="bookingDate">Date:</label><br>
+            <input type="date" id="bookingDate" name="bookingDate">
+        </div>
+        <br>
+        <div>
+            <label for="timeSlot">Time Slot:</label><br>
+            <select id="timeSlot" name="timeSlot">
+                <option value="09:00 AM">09:00 AM</option>
+                <option value="11:00 AM">11:00 AM</option>
+                <option value="01:00 PM">01:00 PM</option>
+                <option value="03:00 PM">03:00 PM</option>
+                <option value="05:00 PM">05:00 PM</option>
+            </select>
+        </div>
+        <br>
+        <div>
+            <label for="testDriveType">Test Drive Type:</label><br>
+            <select id="testDriveType" name="testDriveType" onchange="toggleAddressField()">
+                <option value="DEALERSHIP">Dealership Pickup</option>
+                <option value="HOME">At-Home Delivery</option>
+            </select>
+        </div>
+        <br>
+        <!-- delivery address: hidden by default unless HOME is selected -->
+        <div id="addressSection" style="display: none;">
+            <label for="deliveryAddress">Delivery Address (Required for At-Home):</label><br>
+            <input type="text" id="deliveryAddress" name="deliveryAddress" size="40">
+            <br><br>
+        </div>
+
+        <button type="button" onclick="submitBooking()">Confirm Reservation</button>
+        <button type="button" onclick="fetchMyBookings()">View My Bookings</button>
+    </form>
+
+    <br>
+    <p>
+        <a href="/login.html">Sign In / Switch Account</a> | 
+        <a href="/register.html">Register</a>
+    </p>
+
+    <hr>
+
+    <!-- container to print server response directly on page -->
+    <h3>Status / Output:</h3>
+    <pre id="outputBox">Ready</pre>
+
+    <script>
+        const out = document.getElementById("outputBox");
+
+        // disable and grey out past dates in the datepicker
+        const dateInput = document.getElementById("bookingDate");
+        const today = new Date().toISOString().split("T")[0];
+        dateInput.min = today;
+
+        
+        
+        // toggle visibility of delivery address based on test drive type
+        function toggleAddressField() {
+            const type = document.getElementById("testDriveType").value;
+            const addressDiv = document.getElementById("addressSection");
+            if (type === "HOME") {
+                addressDiv.style.display = "block";
+            } else {
+                addressDiv.style.display = "none";
+            }
+        }
+
+        // send booking request to backend controller
+        async function submitBooking() {
+            out.innerText = "Submitting reservation...";
+
+            const payload = {
+                carModel: document.getElementById("carModel").value,
+                bookingDate: document.getElementById("bookingDate").value,
+                timeSlot: document.getElementById("timeSlot").value,
+                testDriveType: document.getElementById("testDriveType").value,
+                deliveryAddress: document.getElementById("deliveryAddress").value
+            };
+
+            try {
+                const response = await fetch("/api/testdrive/book", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    out.innerText = "Success (Status " + response.status + "):\n" + JSON.stringify(result, null, 2);
+                } else {
+                    out.innerText = "Error (Status " + response.status + "):\n" + JSON.stringify(result, null, 2);
+                }
+            } catch (error) {
+                out.innerText = "Request failed: " + error.message;
+            }
+        }
+
+        // retrieve all bookings for the currently authenticated customer
+        async function fetchMyBookings() {
+            out.innerText = "Fetching your bookings...";
+
+            try {
+                const response = await fetch("/api/testdrive/my-bookings");
+                const result = await response.json();
+
+                if (response.ok) {
+                    out.innerText = "Bookings Retrieved (Status " + response.status + "):\n" + JSON.stringify(result, null, 2);
+                } else {
+                    out.innerText = "Error (Status " + response.status + "):\n" + JSON.stringify(result, null, 2);
+                }
+            } catch (error) {
+                out.innerText = "Request failed: " + error.message;
+            }
+        }
+    </script>
+
+</body>
+</html>
+
