@@ -1,4 +1,4 @@
-package evStore;
+package com.evstore;
 
 import java.math.BigDecimal;
 
@@ -13,8 +13,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
-import evStore.model.Vehicle;
-import evStore.repository.VehicleRepository;
+import com.evstore.model.Vehicle;
+import com.evstore.repository.VehicleRepository;
 
 @Configuration
 public class LoadDatabase {

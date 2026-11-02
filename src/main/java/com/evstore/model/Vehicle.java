@@ -1,4 +1,4 @@
-package evStore.model;
+package com.evstore.model;
 
 import java.math.BigDecimal;
 import jakarta.persistence.Entity;
