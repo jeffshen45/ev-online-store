@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EV Store - Login / Logout</title>
+</head>
+<body>
+
+    <!-- simple heading for PB10 authentication -->
+    <h1>Customer Sign In & Sign Out</h1>
+    <p>Sign in with your email and password, check session state, or sign out.</p>
+
+    <!-- basic login form -->
+    <form id="loginForm">
+        <div>
+            <label for="email">Email Address:</label><br>
+            <input type="email" id="email" name="email">
+        </div>
+        <br>
+        <div>
+            <label for="password">Password:</label><br>
+            <input type="password" id="password" name="password">
+        </div>
+        <br>
+        <!-- actions for login, session check, and logout -->
+        <button type="button" onclick="submitLogin()">Sign In</button>
+        <button type="button" onclick="checkStatus()">Check Session Status</button>
+        <button type="button" onclick="submitLogout()">Sign Out</button>
+    </form>
+
+    <br>
+    <!-- quick links between pages -->
+    <p>
+        <a href="/register.html">Need an account? Go to Registration</a> | 
+        <a href="/testdrive.html">Schedule a Test Drive</a>
+    </p>
+
+    <hr>
+
+    <!-- container to print server response directly on page -->
+    <h3>Status / Output:</h3>
+    <pre id="outputBox">Ready</pre>
+
+    <script>
+        const out = document.getElementById("outputBox");
+
+        // send sign-in request
+        async function submitLogin() {
+            out.innerText = "Signing in...";
+
+            const credentials = {
+                email: document.getElementById("email").value,
+                password: document.getElementById("password").value
+            };
+
+            try {
+                const response = await fetch("/api/auth/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(credentials)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    out.innerText = "Success (Status " + response.status + "):\n" + JSON.stringify(result, null, 2);
+                } else {
+                    out.innerText = "Error (Status " + response.status + "):\n" + JSON.stringify(result, null, 2);
+                }
+            } catch (error) {
+                out.innerText = "Request failed: " + error.message;
+            }
+        }
+
+        // check if server recognizes our session
+        async function checkStatus() {
+            out.innerText = "Checking session status...";
+
+            try {
+                const response = await fetch("/api/auth/status");
+                const result = await response.json();
+
+                if (response.ok) {
+                    out.innerText = "Session Active (Status " + response.status + "):\n" + JSON.stringify(result, null, 2);
+                } else {
+                    out.innerText = "No Session (Status " + response.status + "):\n" + JSON.stringify(result, null, 2);
+                }
+            } catch (error) {
+                out.innerText = "Request failed: " + error.message;
+            }
+        }
+
+        // terminate active session
+        async function submitLogout() {
+            out.innerText = "Signing out...";
+
+            try {
+                const response = await fetch("/api/auth/logout", {
+                    method: "POST"
+                });
+
+                const result = await response.json();
+                out.innerText = "Logged Out (Status " + response.status + "):\n" + JSON.stringify(result, null, 2);
+            } catch (error) {
+                out.innerText = "Request failed: " + error.message;
+            }
+        }
+    </script>
+
+</body>
+</html>
+
