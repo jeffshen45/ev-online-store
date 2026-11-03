@@ -81,7 +81,7 @@ public class TestDriveServiceTest {
 
 
     @Test
-    @DisplayName("Should successfully schedule an at-home test drive booking with delivery address")
+    @DisplayName("Should successfully schedule an at home test drive booking with delivery address")
     void shouldScheduleHomeBookingSuccessfully() {
         TestDriveBooking savedHomeBooking = new TestDriveBooking(testCustomerId, "CyberSedan Alpha", futureBookingDate, "16:00", "HOME", "3359 Mississauga Road, Mississauga, ON", "CONFIRMED");
 
