@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Vehicles</title>
+</head>
+<body>
+    <h1>Vehicle Inventory</h1>
+    <a th:href="@{/vehicles/new}">Add vehicle</a>
+
+    <table border="1">
+        <tr>
+            <th>Make</th>
+            <th>Model</th>
+            <th>Year</th>
+            <th>Price</th>
+            <th>Mileage</th>
+            <th>Action</th>
+        </tr>
+        <tr th:each="v : ${vehicles}">
+            <td th:text="${v.make}"></td>
+            <td th:text="${v.model}"></td>
+            <td th:text="${v.modelYear}"></td>
+            <td th:text="${v.price}"></td>
+            <td th:text="${v.mileage}"></td>
+            <td>
+                <form th:action="@{/vehicles/{id}/delete(id=${v.id})}" method="post">
+                    <button type="submit" onclick="return confirm('Delete this vehicle?')">Delete</button>
+                </form>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
