@@ -15,6 +15,6 @@ class VehicleModelAssembler implements RepresentationModelAssembler<Vehicle, Ent
   public EntityModel<Vehicle> toModel(Vehicle vehicle) {
     return EntityModel.of(vehicle,
         linkTo(methodOn(VehicleController.class).one(vehicle.getId())).withSelfRel(),
-        linkTo(methodOn(VehicleController.class).all()).withRel("vehicles"));
+        linkTo(methodOn(VehicleController.class).all("price", "asc")).withRel("vehicles"));
   }
 }

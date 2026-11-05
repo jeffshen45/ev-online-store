@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.evstore.model.Vehicle;
@@ -31,15 +32,18 @@ class VehicleController {
     this.assembler = assembler;
   }
 
+  //Sort by price and ascending as default
   @GetMapping("/api/vehicles")
-  CollectionModel<EntityModel<Vehicle>> all() {
-    List<EntityModel<Vehicle>> vehicles = service.getAllVehicles().stream()
-        .map(assembler::toModel)
-        .collect(Collectors.toList());
+  CollectionModel<EntityModel<Vehicle>> all(
+	        @RequestParam(defaultValue = "price") String sort,
+	        @RequestParam(defaultValue = "asc") String dir) {
+	    List<EntityModel<Vehicle>> vehicles = service.getVehicles(sort, dir).stream()
+	        .map(assembler::toModel)
+	        .collect(Collectors.toList());
 
-    return CollectionModel.of(vehicles,
-        linkTo(methodOn(VehicleController.class).all()).withSelfRel());
-  }
+	    return CollectionModel.of(vehicles,
+	        linkTo(methodOn(VehicleController.class).all(sort, dir)).withSelfRel());
+	}
 
   @PostMapping("/api/vehicles")
   ResponseEntity<?> newVehicle(@RequestBody Vehicle newVehicle) {

@@ -5,6 +5,16 @@
 </head>
 <body>
     <h1>Vehicle Inventory</h1>
+    <p>
+    	Sort by price:
+    	<a th:href="@{/vehicles(sort='price',dir='asc')}">low to high</a> |
+    	<a th:href="@{/vehicles(sort='price',dir='desc')}">high to low</a>
+	</p>
+	<p>
+    	Sort by mileage:
+    	<a th:href="@{/vehicles(sort='mileage',dir='asc')}">low to high</a> |
+    	<a th:href="@{/vehicles(sort='mileage',dir='desc')}">high to low</a>
+	</p>
     <a th:href="@{/vehicles/new}">Add vehicle</a>
 
     <table border="1">
