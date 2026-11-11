@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Book a Test Drive - EV Store</title>
+</head>
+<body>
+    <h2>Schedule an EV Test Drive</h2>
+    <p th:if="${error}" th:text="${error}" style="color: red;"></p>
+    <p th:if="${success}" th:text="${success}" style="color: green;"></p>
+
+    <form th:action="@{/testdrive}" method="post">
+        <div>
+            <label>Car Model:</label><br/>
+            <input type="text" name="carModel" placeholder="e.g. Model 3, Ioniq 5" required />
+        </div><br/>
+        <div>
+    		<label>Date (YYYY-MM-DD):</label><br/>
+    		<input type="date" id="bookingDate" name="bookingDate" 
+           th:min="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}" required />
+		</div><br/>
+        <div>
+            <label>Time Slot:</label><br/>
+            <select name="timeSlot" required>
+                <option value="10:00 AM">10:00 AM</option>
+                <option value="01:00 PM">01:00 PM</option>
+                <option value="03:00 PM">03:00 PM</option>
+            </select>
+        </div><br/>
+        <div>
+            <label>Test Drive Type:</label><br/>
+            <select name="testDriveType" required>
+                <option value="DEALERSHIP">Dealership</option>
+                <option value="HOME">Home Delivery</option>
+            </select>
+        </div><br/>
+        <div>
+            <label>Delivery Address (if Home selected):</label><br/>
+            <input type="text" name="deliveryAddress" placeholder="Street Address" />
+        </div><br/>
+        <button type="submit">Book Test Drive</button>
+    </form>
+    <br/>
+    <a th:href="@{/}">Back to Store</a>
+
+    <script>
+    	const now = new Date();
+    	const year = now.getFullYear();
+    	const month = String(now.getMonth() + 1).padStart(2, '0');
+    	
+    	const day = String(now.getDate()).padStart(2, '0');
+    	
+    	const minDate = `${year}-${month}-${day}`;
+    
+    	const dateInput = document.getElementById('bookingDate');
+    	dateInput.min = minDate;
+	</script>
+
+</body>
+</html>
+

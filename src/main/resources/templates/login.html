@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Sign In - EV Store</title>
+</head>
+<body>
+    <h2>Customer Sign In</h2>
+    <p th:if="${error}" th:text="${error}" style="color: red;"></p>
+    <p th:if="${success}" th:text="${success}" style="color: green;"></p>
+
+    <form th:action="@{/login}" method="post">
+        <div>
+            <label>Email: </label><br/>
+            <input type="email" name="email" required />
+        </div><br/>
+        <div>
+            <label>Password: </label><br/>
+            <input type="password" name="password" required />
+        </div><br/>
+        <button type="submit">Sign In</button>
+    </form>
+    <br/>
+    <a th:href="@{/register}">Need an account? Register here</a> | <a th:href="@{/}">Back to Store</a>
+</body>
+</html>
+
