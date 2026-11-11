@@ -27,5 +27,8 @@ The application provides browser accessible Thymeleaf views connecting directly 
 Run the automated test suite directly through Maven or the IDE JUnit test runner:
 ```bash
 ./mvnw clean test
+```
+
+
 
 
