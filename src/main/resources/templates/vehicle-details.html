@@ -1,0 +1,88 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Vehicle Details</title>
+</head>
+
+<body>
+
+    <h1 th:text="|${vehicle.modelYear} ${vehicle.make} ${vehicle.model}|">
+        Vehicle Details
+    </h1>
+
+    <h2>Basic Information</h2>
+
+    <table>
+        <tr>
+            <th>Make</th>
+            <td th:text="${vehicle.make}"></td>
+        </tr>
+
+        <tr>
+            <th>Model</th>
+            <td th:text="${vehicle.model}"></td>
+        </tr>
+
+        <tr>
+            <th>Year</th>
+            <td th:text="${vehicle.modelYear}"></td>
+        </tr>
+
+        <tr>
+            <th>Price</th>
+            <td th:text="${vehicle.price}"></td>
+        </tr>
+
+        <tr>
+            <th>Mileage</th>
+            <td th:text="${vehicle.mileage}"></td>
+        </tr>
+    </table>
+
+    <h2>Vehicle Specifications</h2>
+
+    <table>
+        <tr>
+            <th>Condition</th>
+            <td th:text="${vehicle.condition != null ? vehicle.condition.label : 'Not specified'}"></td>
+        </tr>
+
+        <tr>
+            <th>Transmission</th>
+            <td th:text="${vehicle.transmission != null ? vehicle.transmission.label : 'Not specified'}"></td>
+        </tr>
+
+        <tr>
+            <th>Fuel Type</th>
+            <td th:text="${vehicle.fuelType != null ? vehicle.fuelType.label : 'Not specified'}"></td>
+        </tr>
+
+        <tr>
+            <th>Colour</th>
+            <td th:text="${vehicle.colour != null ? vehicle.colour : 'Not specified'}"></td>
+        </tr>
+
+        <tr>
+            <th>Horsepower</th>
+            <td th:text="${vehicle.horsepower != null ? vehicle.horsepower + ' hp' : 'Not specified'}"></td>
+        </tr>
+
+        <tr>
+            <th>Seating Capacity</th>
+            <td th:text="${vehicle.seatingCapacity != null ? vehicle.seatingCapacity + ' seats' : 'Not specified'}"></td>
+        </tr>
+
+        <tr>
+            <th>Availability</th>
+            <td th:text="${vehicle.availability != null ? vehicle.availability.label : 'Not specified'}"></td>
+        </tr>
+    </table>
+
+    <p>
+        <a th:href="@{/vehicles}">Back to Vehicle Inventory</a>
+    </p>
+
+</body>
+</html>
