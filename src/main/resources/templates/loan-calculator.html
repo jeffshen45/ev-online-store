@@ -1,0 +1,849 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Vehicle Loan Calculator</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: auto;
+            background-color: white;
+            padding: 25px;
+            border-radius: 8px;
+        }
+
+        h1, h2 {
+            color: #222;
+        }
+
+        .form-section {
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input, select {
+            width: 100%;
+            max-width: 400px;
+            padding: 9px;
+            box-sizing: border-box;
+        }
+
+        button, .back-button {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        button {
+            background-color: #2563eb;
+            color: white;
+        }
+
+        button:hover {
+            background-color: #1d4ed8;
+        }
+
+        .back-button {
+            background-color: #555;
+            color: white;
+        }
+
+        .back-button:hover {
+            background-color: #333;
+        }
+
+        .results {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #ddd;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .result-card {
+            background-color: #f0f4f8;
+            padding: 15px;
+            border-radius: 5px;
+        }
+
+        .result-card strong {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .result-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2563eb;
+        }
+
+        .error {
+            color: #b91c1c;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 9px;
+            text-align: right;
+        }
+
+        th {
+            background-color: #f0f4f8;
+        }
+
+        th:first-child, td:first-child {
+            text-align: center;
+        }
+
+        .schedule-container {
+            overflow-x: auto;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                margin: 10px;
+            }
+
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Vehicle Loan Calculator</h1>
+
+    <p>
+        Calculate your estimated monthly vehicle loan payments,
+        total interest, and payoff time.
+    </p>
+
+    <form id="loanForm">
+
+        <div class="form-section">
+
+            <h2>Loan Information</h2>
+
+            <div class="form-group">
+
+                <label for="principal">
+                    Loan Principal ($)
+                </label>
+
+                <input type="number"
+                       id="principal"
+                       min="0.01"
+                       step="0.01"
+                       placeholder="Enter loan amount"
+                       required>
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="annualRate">
+                    Annual Interest Rate (%)
+                </label>
+
+                <input type="number"
+                       id="annualRate"
+                       min="0"
+                       max="100"
+                       step="0.01"
+                       placeholder="e.g. 5.99"
+                       required>
+
+            </div>
+
+        </div>
+
+        <div class="form-section">
+
+            <h2>Calculation Method</h2>
+
+            <div class="form-group">
+
+                <label for="calculationMode">
+                    What would you like to calculate?
+                </label>
+
+                <select id="calculationMode">
+
+                    <option value="payment">
+                        Calculate how long to pay off
+                    </option>
+
+                    <option value="term">
+                        Calculate required monthly payment
+                    </option>
+
+                </select>
+
+            </div>
+
+            <!-- Monthly payment input -->
+
+            <div class="form-group" id="paymentGroup">
+
+                <label for="monthlyPayment">
+                    Monthly Payment ($)
+                </label>
+
+                <input type="number"
+                       id="monthlyPayment"
+                       min="0.01"
+                       step="0.01"
+                       value="750"
+                       required>
+
+            </div>
+
+            <!-- Loan term input -->
+
+            <div class="form-group" id="termGroup" hidden>
+
+                <label for="loanTermMonths">
+                    Desired Loan Term (months)
+                </label>
+
+                <input type="number"
+                       id="loanTermMonths"
+                       min="1"
+                       max="600"
+                       step="1"
+                       value="60"
+                       disabled>
+
+            </div>
+
+        </div>
+
+        <div class="form-section">
+
+            <h2>Additional Payments</h2>
+
+            <div class="form-group">
+
+                <label for="extraPayment">
+                    Additional Monthly Principal Payment ($)
+                </label>
+
+                <input type="number"
+                       id="extraPayment"
+                       min="0"
+                       step="0.01"
+                       value="0">
+
+                <small>
+                    This amount is added to your regular monthly payment
+                    and applied toward the remaining principal.
+                </small>
+
+            </div>
+
+        </div>
+
+        <button type="submit">
+            Calculate Loan
+        </button>
+
+        <button type="reset">
+            Reset
+        </button>
+
+    </form>
+
+    <p id="errorMessage" class="error"></p>
+
+    <!-- Calculation results -->
+
+    <section id="results" class="results" hidden>
+
+        <h2>Loan Calculation Results</h2>
+
+        <p id="calculationNote"></p>
+
+        <div class="result-grid">
+
+            <div class="result-card">
+
+                <strong>Base Monthly Payment</strong>
+
+                <div class="result-value" id="basePaymentResult">
+                </div>
+
+            </div>
+
+            <div class="result-card">
+
+                <strong>Monthly Payment Including Extra</strong>
+
+                <div class="result-value" id="totalPaymentResult">
+                </div>
+
+            </div>
+
+            <div class="result-card">
+
+                <strong>Estimated Payoff Time</strong>
+
+                <div class="result-value" id="payoffResult">
+                </div>
+
+            </div>
+
+            <div class="result-card">
+
+                <strong>Total Interest Paid</strong>
+
+                <div class="result-value" id="interestResult">
+                </div>
+
+            </div>
+
+            <div class="result-card">
+
+                <strong>Total Amount Paid</strong>
+
+                <div class="result-value" id="totalPaidResult">
+                </div>
+
+            </div>
+
+            <div class="result-card">
+
+                <strong>Number of Payments</strong>
+
+                <div class="result-value" id="numberPaymentsResult">
+                </div>
+
+            </div>
+
+        </div>
+
+        <h2>Monthly Repayment Schedule</h2>
+
+        <p>
+            The following table shows how each payment is divided
+            between interest and principal.
+        </p>
+
+        <details>
+
+            <summary>View Amortization Schedule</summary>
+
+            <div class="schedule-container">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Month</th>
+                            <th>Payment</th>
+                            <th>Principal Paid</th>
+                            <th>Interest Paid</th>
+                            <th>Remaining Balance</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="scheduleBody">
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </details>
+
+    </section>
+
+    <hr>
+
+    <a th:href="@{/}" class="back-button">
+        Back to Home
+    </a>
+
+</div>
+
+
+<script>
+
+
+    const form = document.getElementById("loanForm");
+
+    const calculationMode =
+        document.getElementById("calculationMode");
+
+    const paymentGroup =
+        document.getElementById("paymentGroup");
+
+    const termGroup =
+        document.getElementById("termGroup");
+
+    const monthlyPaymentInput =
+        document.getElementById("monthlyPayment");
+
+    const loanTermInput =
+        document.getElementById("loanTermMonths");
+
+    const results =
+        document.getElementById("results");
+
+    const errorMessage =
+        document.getElementById("errorMessage");
+
+
+
+    const currencyFormatter = new Intl.NumberFormat("en-CA", {
+        style: "currency",
+        currency: "CAD"
+    });
+
+    function formatMoney(amount) {
+        return currencyFormatter.format(amount);
+    }
+
+
+
+    function updateCalculationMode() {
+
+        const mode = calculationMode.value;
+
+        const calculatePayoff = mode === "payment";
+
+        paymentGroup.hidden = !calculatePayoff;
+        termGroup.hidden = calculatePayoff;
+
+        monthlyPaymentInput.disabled = !calculatePayoff;
+        monthlyPaymentInput.required = calculatePayoff;
+
+        loanTermInput.disabled = calculatePayoff;
+        loanTermInput.required = !calculatePayoff;
+    }
+
+    calculationMode.addEventListener(
+        "change",
+        updateCalculationMode
+    );
+
+
+
+    form.addEventListener("reset", function() {
+
+        results.hidden = true;
+        errorMessage.textContent = "";
+
+        updateCalculationMode();
+
+    });
+
+
+
+    function formatDuration(months) {
+
+        const years = Math.floor(months / 12);
+
+        const remainingMonths = months % 12;
+
+        const parts = [];
+
+        if (years > 0) {
+
+            parts.push(
+                years + (years === 1 ? " year" : " years")
+            );
+
+        }
+
+        if (remainingMonths > 0) {
+
+            parts.push(
+                remainingMonths +
+                (remainingMonths === 1 ? " month" : " months")
+            );
+
+        }
+
+        return parts.length > 0
+            ? parts.join(", ")
+            : "Less than one month";
+    }
+
+
+
+    function calculateLoan(
+        principal,
+        annualRate,
+        basePayment,
+        extraPayment
+    ) {
+
+        const monthlyRate = annualRate / 100 / 12;
+
+        const totalMonthlyPayment = basePayment + extraPayment;
+
+
+        if (totalMonthlyPayment <= principal * monthlyRate) {
+
+            throw new Error(
+                "Your monthly payment must be greater than " +
+                "the initial monthly interest charge."
+            );
+
+        }
+
+        let balance = principal;
+
+        let totalInterest = 0;
+
+        let totalPaid = 0;
+
+        const schedule = [];
+
+
+        for (let month = 1; month <= 1200; month++) {
+
+            const interest = balance * monthlyRate;
+
+            const amountDue = balance + interest;
+
+
+            const payment = Math.min(
+                totalMonthlyPayment,
+                amountDue
+            );
+
+            const principalPaid = payment - interest;
+
+            balance -= principalPaid;
+
+
+            if (balance < 0.005) {
+                balance = 0;
+            }
+
+            totalInterest += interest;
+
+            totalPaid += payment;
+
+            schedule.push({
+
+                month: month,
+
+                payment: payment,
+
+                principal: principalPaid,
+
+                interest: interest,
+
+                balance: balance
+
+            });
+
+            if (balance === 0) {
+                break;
+            }
+
+        }
+
+        if (balance > 0) {
+
+            throw new Error(
+                "The loan could not be paid off within 100 years. " +
+                "Try increasing your monthly payment."
+            );
+
+        }
+
+        return {
+
+            totalMonthlyPayment: totalMonthlyPayment,
+
+            payoffMonths: schedule.length,
+
+            totalInterest: totalInterest,
+
+            totalPaid: totalPaid,
+
+            schedule: schedule
+
+        };
+
+    }
+
+
+
+    function displaySchedule(schedule) {
+
+        const tableBody =
+            document.getElementById("scheduleBody");
+
+        tableBody.innerHTML = "";
+
+        schedule.forEach(function(entry) {
+
+            const row = document.createElement("tr");
+
+            const values = [
+
+                entry.month,
+
+                formatMoney(entry.payment),
+
+                formatMoney(entry.principal),
+
+                formatMoney(entry.interest),
+
+                formatMoney(entry.balance)
+
+            ];
+
+            values.forEach(function(value) {
+
+                const cell = document.createElement("td");
+
+                cell.textContent = value;
+
+                row.appendChild(cell);
+
+            });
+
+            tableBody.appendChild(row);
+
+        });
+
+    }
+
+
+
+    form.addEventListener("submit", function(event) {
+
+        event.preventDefault();
+
+        errorMessage.textContent = "";
+
+        results.hidden = true;
+
+        try {
+
+            const principal = Number(
+                document.getElementById("principal").value
+            );
+
+            const annualRate = Number(
+                document.getElementById("annualRate").value
+            );
+
+            const extraPayment = Number(
+                document.getElementById("extraPayment").value || 0
+            );
+
+            const mode = calculationMode.value;
+
+            let basePayment;
+
+
+            if (!Number.isFinite(principal) ||
+                principal <= 0) {
+
+                throw new Error(
+                    "Please enter a valid loan principal."
+                );
+
+            }
+
+            if (!Number.isFinite(annualRate) ||
+                annualRate < 0 ||
+                annualRate > 100) {
+
+                throw new Error(
+                    "Please enter an interest rate between 0 and 100%."
+                );
+
+            }
+
+            if (!Number.isFinite(extraPayment) ||
+                extraPayment < 0) {
+
+                throw new Error(
+                    "Additional payments cannot be negative."
+                );
+
+            }
+
+
+            //Mode 1: Calculate payoff time
+
+            if (mode === "payment") {
+
+                basePayment = Number(
+                    monthlyPaymentInput.value
+                );
+
+                if (!Number.isFinite(basePayment) ||
+                    basePayment <= 0) {
+
+                    throw new Error(
+                        "Please enter a valid monthly payment."
+                    );
+
+                }
+
+            }
+
+
+            //Mode 2: Calculate required monthly payment
+
+            else {
+
+                const termMonths = Number(
+                    loanTermInput.value
+                );
+
+                if (!Number.isInteger(termMonths) ||
+                    termMonths < 1 ||
+                    termMonths > 600) {
+
+                    throw new Error(
+                        "Loan term must be between 1 and 600 months."
+                    );
+
+                }
+
+                const monthlyRate = annualRate / 100 / 12;
+
+                // Monthly payment formula
+
+                if (monthlyRate === 0) {
+
+                    basePayment = principal / termMonths;
+
+                }
+
+                else {
+
+                    basePayment =
+                        principal * monthlyRate /
+                        (1 - Math.pow(1 + monthlyRate, -termMonths));
+
+                }
+
+            }
+
+
+            const loan = calculateLoan(
+                principal,
+                annualRate,
+                basePayment,
+                extraPayment
+            );
+
+
+            document.getElementById("basePaymentResult")
+                .textContent = formatMoney(basePayment);
+
+            document.getElementById("totalPaymentResult")
+                .textContent =
+                    formatMoney(loan.totalMonthlyPayment);
+
+            document.getElementById("payoffResult")
+                .textContent =
+                    formatDuration(loan.payoffMonths);
+
+            document.getElementById("interestResult")
+                .textContent =
+                    formatMoney(loan.totalInterest);
+
+            document.getElementById("totalPaidResult")
+                .textContent =
+                    formatMoney(loan.totalPaid);
+
+            document.getElementById("numberPaymentsResult")
+                .textContent =
+                    loan.payoffMonths;
+
+            if (mode === "term") {
+
+                document.getElementById("calculationNote")
+                    .textContent =
+                        "Your base monthly payment is calculated " +
+                        "to repay the loan over " +
+                        loanTermInput.value +
+                        " months. Additional payments shorten " +
+                        "the actual payoff time.";
+
+            }
+
+            else {
+
+                document.getElementById("calculationNote")
+                    .textContent =
+                        "Your payoff estimate assumes that your " +
+                        "regular and additional monthly payments " +
+                        "remain consistent.";
+
+            }
+
+
+
+            displaySchedule(loan.schedule);
+
+            results.hidden = false;
+
+        }
+
+        catch (error) {
+
+            errorMessage.textContent = error.message;
+
+        }
+
+    });
+
+
+
+    updateCalculationMode();
+
+</script>
+
+</body>
+</html>

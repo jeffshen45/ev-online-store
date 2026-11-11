@@ -1,3 +1,4 @@
+
 package com.evstore.controller;
 
 import org.springframework.stereotype.Controller;
@@ -9,5 +10,10 @@ public class HomeController {
     @GetMapping("/")
     public String home() {
         return "index";
+    }
+
+    @GetMapping("/loan-calculator")
+    public String loanCalculator() {
+        return "loan-calculator";
     }
 }
