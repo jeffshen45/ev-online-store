@@ -1,23 +1,202 @@
+
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <title>Vehicles</title>
 </head>
+
 <body>
+
     <h1>Vehicle Inventory</h1>
     <p>
-    	Sort by price:
-    	<a th:href="@{/vehicles(sort='price',dir='asc')}">low to high</a> |
-    	<a th:href="@{/vehicles(sort='price',dir='desc')}">high to low</a>
+    <a th:href="@{/}">
+        <button type="button">Back to Home</button>
+    </a>
 	</p>
-	<p>
-    	Sort by mileage:
-    	<a th:href="@{/vehicles(sort='mileage',dir='asc')}">low to high</a> |
-    	<a th:href="@{/vehicles(sort='mileage',dir='desc')}">high to low</a>
-	</p>
+
+    <h2>Filter Vehicles</h2>
+
+    <form th:action="@{/vehicles}"
+          th:object="${filter}"
+          method="get">
+
+        <h3>General Information</h3>
+
+        <p>
+            Make:
+            <input type="text"
+                   th:field="*{make}"
+                   placeholder="e.g. Tesla">
+        </p>
+
+        <p>
+            Model:
+            <input type="text"
+                   th:field="*{model}"
+                   placeholder="e.g. Model 3">
+        </p>
+
+        <p>
+            Colour:
+            <input type="text"
+                   th:field="*{colour}"
+                   placeholder="e.g. Black">
+        </p>
+
+        <h3>Vehicle Specifications</h3>
+
+        <p>
+            Condition:
+            <select th:field="*{condition}">
+                <option value="">Any</option>
+                <option value="FACTORY_NEW">Factory New</option>
+                <option value="LIGHTLY_USED">Lightly Used</option>
+                <option value="USED">Used</option>
+            </select>
+        </p>
+
+        <p>
+            Transmission:
+            <select th:field="*{transmission}">
+                <option value="">Any</option>
+                <option value="AUTOMATIC">Automatic</option>
+                <option value="MANUAL">Manual</option>
+            </select>
+        </p>
+
+        <p>
+            Fuel Type:
+            <select th:field="*{fuelType}">
+                <option value="">Any</option>
+                <option value="ELECTRIC">Electric</option>
+                <option value="HYBRID">Hybrid</option>
+            </select>
+        </p>
+
+        <p>
+            Availability:
+            <select th:field="*{availability}">
+                <option value="">Any</option>
+                <option value="AVAILABLE">Available</option>
+                <option value="RESERVED">Reserved</option>
+                <option value="SOLD">Sold</option>
+            </select>
+        </p>
+
+        <h3>Price and Performance Ranges</h3>
+
+        <p>
+            Year:
+            <input type="number"
+                   th:field="*{minYear}"
+                   placeholder="Minimum"
+                   min="0">
+
+            to
+
+            <input type="number"
+                   th:field="*{maxYear}"
+                   placeholder="Maximum"
+                   min="0">
+        </p>
+
+        <p>
+            Price:
+            $<input type="number"
+                    th:field="*{minPrice}"
+                    placeholder="Minimum"
+                    min="0"
+                    step="0.01">
+
+            to
+
+            $<input type="number"
+                    th:field="*{maxPrice}"
+                    placeholder="Maximum"
+                    min="0"
+                    step="0.01">
+        </p>
+
+        <p>
+            Mileage:
+            <input type="number"
+                   th:field="*{minMileage}"
+                   placeholder="Minimum"
+                   min="0">
+
+            to
+
+            <input type="number"
+                   th:field="*{maxMileage}"
+                   placeholder="Maximum"
+                   min="0">
+        </p>
+
+        <p>
+            Horsepower:
+            <input type="number"
+                   th:field="*{minHorsepower}"
+                   placeholder="Minimum"
+                   min="1">
+
+            to
+
+            <input type="number"
+                   th:field="*{maxHorsepower}"
+                   placeholder="Maximum"
+                   min="1">
+        </p>
+
+        <p>
+            Seating Capacity:
+            <input type="number"
+                   th:field="*{minSeatingCapacity}"
+                   placeholder="Minimum"
+                   min="1">
+
+            to
+
+            <input type="number"
+                   th:field="*{maxSeatingCapacity}"
+                   placeholder="Maximum"
+                   min="1">
+        </p>
+
+        <h3>Sort Results</h3>
+
+        <p>
+            Sort by:
+
+            <select th:field="*{sort}">
+                <option value="price">Price</option>
+                <option value="mileage">Mileage</option>
+            </select>
+
+            Direction:
+
+            <select th:field="*{dir}">
+                <option value="asc">Ascending</option>
+                <option value="desc">Descending</option>
+            </select>
+        </p>
+
+        <button type="submit">Apply Filters</button>
+
+        <a th:href="@{/vehicles}">Clear Filters</a>
+
+    </form>
+
+    <hr>
+
+    <h2>Vehicles</h2>
+
+    <p th:text="|${#lists.size(vehicles)} vehicle(s) found|"></p>
+
     <a th:href="@{/vehicles/new}">Add vehicle</a>
 
     <table border="1">
+
         <tr>
             <th>Make</th>
             <th>Model</th>
@@ -26,18 +205,42 @@
             <th>Mileage</th>
             <th>Action</th>
         </tr>
+
         <tr th:each="v : ${vehicles}">
+
             <td th:text="${v.make}"></td>
-            <td th:text="${v.model}"></td>
-            <td th:text="${v.modelYear}"></td>
-            <td th:text="${v.price}"></td>
-            <td th:text="${v.mileage}"></td>
+
             <td>
-                <form th:action="@{/vehicles/{id}/delete(id=${v.id})}" method="post">
-                    <button type="submit" onclick="return confirm('Delete this vehicle?')">Delete</button>
+                <a th:href="@{/vehicles/{id}(id=${v.id})}"
+                   th:text="${v.model}">
+                </a>
+            </td>
+
+            <td th:text="${v.modelYear}"></td>
+
+            <td th:text="${v.price}"></td>
+
+            <td th:text="${v.mileage}"></td>
+
+            <td>
+                <form th:action="@{/vehicles/{id}/delete(id=${v.id})}"
+                      method="post">
+
+                    <button type="submit"
+                            onclick="return confirm('Delete this vehicle?')">
+                        Delete
+                    </button>
+
                 </form>
             </td>
+
         </tr>
+
+        <tr th:if="${#lists.isEmpty(vehicles)}">
+            <td colspan="6">No vehicles match your filters.</td>
+        </tr>
+
     </table>
+
 </body>
 </html>
