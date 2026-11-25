@@ -24,6 +24,10 @@ public class LoadDatabase {
     @Bean
     CommandLineRunner initDatabase(VehicleRepository repository) {
         return args -> {
+        	if (repository.count() > 0) {
+                log.info("Vehicles already exist, skipping sample data");
+                return;
+            }
             log.info("Preloading " + repository.save(
                     new Vehicle("Tesla", "Model 3", 2025, new BigDecimal("45000"), 0)));
             log.info("Preloading " + repository.save(
