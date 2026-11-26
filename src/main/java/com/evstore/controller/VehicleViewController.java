@@ -1,5 +1,10 @@
 package com.evstore.controller;
 
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,15 +14,19 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import com.evstore.dto.VehicleFilter;
 import com.evstore.model.Vehicle;
+import com.evstore.model.VehicleOption;
+import com.evstore.service.CartService;
 import com.evstore.service.VehicleService;
 
 @Controller
 class VehicleViewController {
 
     private final VehicleService service;
+    private final CartService cartService;
 
-    VehicleViewController(VehicleService service) {
+    VehicleViewController(VehicleService service, CartService cartService) {
         this.service = service;
+        this.cartService = cartService;
     }
 
     @GetMapping("/vehicles")
@@ -57,8 +66,13 @@ class VehicleViewController {
         Vehicle vehicle = service.findById(id)
                 .orElseThrow(() -> new VehicleNotFoundException(id));
 
-        model.addAttribute("vehicle", vehicle);
+        Map<String, List<VehicleOption>> groups = cartService.getOptions(vehicle).stream()
+                .collect(Collectors.groupingBy(
+                        VehicleOption::getCategory, TreeMap::new, Collectors.toList()));
 
+        model.addAttribute("vehicle", vehicle);
+        model.addAttribute("optionGroups", groups);
         return "vehicle-details";
     }
+    
 }

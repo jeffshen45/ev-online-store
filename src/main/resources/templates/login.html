@@ -4,6 +4,7 @@
     <title>Sign In - EV Store</title>
 </head>
 <body>
+	<div th:replace="~{fragments :: navbar}"></div>
     <h2>Customer Sign In</h2>
     <p th:if="${error}" th:text="${error}" style="color: red;"></p>
     <p th:if="${success}" th:text="${success}" style="color: green;"></p>
