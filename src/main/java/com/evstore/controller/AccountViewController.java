@@ -52,7 +52,11 @@ public class AccountViewController {
         try {
             Customer authenticated = accountService.signIn(req);
             session.setAttribute("LOGGED_IN_CUSTOMER", authenticated);
-            return "redirect:/testdrive";
+            
+            // If the user was sent here from checkout, send them back there
+            String target = (String) session.getAttribute("RETURN_TO");
+            session.removeAttribute("RETURN_TO");
+            return "redirect:" + (target != null ? target : "/testdrive");
         } catch (IllegalArgumentException ex) {
             model.addAttribute("error", ex.getMessage());
             return "login";

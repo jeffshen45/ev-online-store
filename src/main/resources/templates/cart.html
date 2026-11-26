@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Cart</title></head>
+<body>
+	<div th:replace="~{fragments :: navbar}"></div>
+    <h1>Your Cart</h1>
+    <p th:if="${items.isEmpty()}">Your cart is empty.</p>
+    <table border="1" th:unless="${items.isEmpty()}">
+        <tr><th>Vehicle</th><th>Specifications</th><th>Price</th><th>Action</th></tr>
+        <tr th:each="item : ${items}">
+            <td th:text="${item.vehicle.modelYear + ' ' + item.vehicle.make + ' ' + item.vehicle.model}"></td>
+            <td>
+                <div th:each="s : ${item.selections}" th:text="${s.key + ': ' + s.value}"></div>
+            </td>
+            <td th:text="${item.unitPrice}"></td>
+            <td>
+                <form th:action="@{/cart/{id}/remove(id=${item.id})}" method="post">
+                    <button type="submit">Remove</button>
+                </form>
+            </td>
+        </tr>
+    </table>
+    <p>Total: <strong th:text="${total}"></strong></p>
+    <a th:href="@{/checkout}"><button type="button">Checkout</button></a>
+    <a th:href="@{/vehicles}">Keep browsing</a>
+</body>
+</html>

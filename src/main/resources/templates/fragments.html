@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <nav th:fragment="navbar">
+        <a th:href="@{/}">Home</a> |
+        <a th:href="@{/vehicles}">Vehicles</a> |
+        <a th:href="@{/cart}">Cart</a> |
+        <a th:href="@{/purchases}">Purchases</a> |
+         <span th:if="${session.LOGGED_IN_CUSTOMER != null}">
+            <span th:text="${session.LOGGED_IN_CUSTOMER.username}"></span> |
+            <a th:href="@{/logout}">Sign out</a>
+        </span>
+        <span th:if="${session.LOGGED_IN_CUSTOMER == null}">
+            <a th:href="@{/login}">Sign in</a>
+        </span>
+        <hr>
+    </nav>
+</body>
+</html>
