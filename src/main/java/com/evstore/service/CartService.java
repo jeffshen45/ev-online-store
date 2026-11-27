@@ -29,7 +29,7 @@ public class CartService {
         return optionRepo.findByVehicle(vehicle);
     }
 
-    public CartItem addToCart(Long customerId, Long vehicleId, Map<String, String> choices) {
+    public CartItem addToCart(String cartOwner, Long vehicleId, Map<String, String> choices) {
         Vehicle vehicle = vehicleRepo.findById(vehicleId)
                 .orElseThrow(() -> new IllegalArgumentException("Vehicle not found: " + vehicleId));
 
@@ -41,20 +41,22 @@ public class CartService {
                             "Invalid option: " + c.getKey() + " = " + c.getValue()));
             price = price.add(option.getPriceDelta());
         }
-        return cartRepo.save(new CartItem(customerId, vehicle, choices, price));
+        return cartRepo.save(new CartItem(cartOwner, vehicle, choices, price));
     }
 
-    public List<CartItem> getCart(Long customerId) {
-        return cartRepo.findByCustomerId(customerId);
+    public List<CartItem> getCart(String cartOwner) {
+        return cartRepo.findByCartOwner(cartOwner);
     }
 
-    public BigDecimal cartTotal(Long customerId) {
-        return getCart(customerId).stream()
+    public BigDecimal cartTotal(String cartOwner) {
+        return getCart(cartOwner).stream()
                 .map(CartItem::getUnitPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    public void remove(Long itemId) {
-        cartRepo.deleteById(itemId);
+    public void remove(String cartOwner, Long itemId) {
+        cartRepo.findById(itemId)
+                .filter(item -> item.getCartOwner().equals(cartOwner))
+                .ifPresent(cartRepo::delete);
     }
 }
