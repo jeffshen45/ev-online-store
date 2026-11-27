@@ -55,6 +55,7 @@ public class LoadDatabase {
             //sample account
             if (customerRepository.count() == 0) {
                 customerRepository.save(new Customer("demo", "demo@example.com", passwordEncoder.encode("password"), "123 Main St"));
+                customerRepository.save(new Customer("demo2", "demo2@example.com", passwordEncoder.encode("password2"), "1 Main St"));
             }
         };
     }

@@ -40,8 +40,8 @@ public class CheckoutService {
 
     // One transaction: if anything fails, nothing is saved or deleted
     @Transactional
-    public List<PurchaseRecord> checkout(Long customerId, Long cartOwnerId, String paymentType,
-                                         BigDecimal downPercent, int months, BigDecimal annualRate) {
+    public List<PurchaseRecord> checkout(Long customerId, String cartOwner, String paymentType,
+            BigDecimal downPercent, int months, BigDecimal annualRate) {
         if (!"FULL".equals(paymentType) && !"LOAN".equals(paymentType)) {
             throw new IllegalArgumentException("Choose a payment type");
         }
@@ -55,7 +55,7 @@ public class CheckoutService {
 
         Customer customer = customerRepo.findById(customerId)
                 .orElseThrow(() -> new IllegalArgumentException("Customer not found"));
-        List<CartItem> items = cartRepo.findByCustomerId(cartOwnerId);
+        List<CartItem> items = cartRepo.findByCartOwner(cartOwner);
         if (items.isEmpty()) {
             throw new IllegalStateException("Your cart is empty");
         }

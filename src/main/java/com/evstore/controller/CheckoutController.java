@@ -23,7 +23,6 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 class CheckoutController {
 
-    private static final Long CART_OWNER_ID = 1L;                 // same placeholder as CartController
     private static final BigDecimal LOAN_RATE = new BigDecimal("6.0");
 
     private final CartService cartService;
@@ -53,12 +52,12 @@ class CheckoutController {
         if (loggedIn(session) == null) {
             return requireLogin(session, "/checkout");
         }
-        List<CartItem> items = cartService.getCart(CART_OWNER_ID);
+        List<CartItem> items = cartService.getCart(session.getId());
         if (items.isEmpty()) {
             return "redirect:/cart";
         }
         model.addAttribute("items", items);
-        model.addAttribute("total", cartService.cartTotal(CART_OWNER_ID));
+        model.addAttribute("total", cartService.cartTotal(session.getId()));
         return "checkout";
     }
 
@@ -73,8 +72,8 @@ class CheckoutController {
         }
         try {
             List<PurchaseRecord> records = checkoutService.checkout(
-                    customer.getId(), CART_OWNER_ID, paymentType, downPercent, months, LOAN_RATE);
-            emailService.sendPurchaseConfirmation(customer, records);   // after the transaction commits
+                    customer.getId(), session.getId(), paymentType, downPercent, months, LOAN_RATE);
+            emailService.sendPurchaseConfirmation(customer, records);
             return "redirect:/purchases";
         } catch (IllegalArgumentException | IllegalStateException e) {
             redirect.addFlashAttribute("error", e.getMessage());
@@ -92,5 +91,4 @@ class CheckoutController {
                 purchaseRepo.findByCustomer_IdOrderByPurchasedAtDesc(customer.getId()));
         return "purchases";
     }
-
 }

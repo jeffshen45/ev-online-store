@@ -12,7 +12,7 @@ public class CartItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long customerId;   // placeholder until checkout needs the real user
+    private String cartOwner;
 
     @ManyToOne
     private Vehicle vehicle;
@@ -27,15 +27,15 @@ public class CartItem {
 
     public CartItem() {}
 
-    public CartItem(Long customerId, Vehicle vehicle, Map<String, String> selections, BigDecimal unitPrice) {
-        this.customerId = customerId;
+    public CartItem(String cartOwner, Vehicle vehicle, Map<String, String> selections, BigDecimal unitPrice) {
+        this.cartOwner = cartOwner;
         this.vehicle = vehicle;
         this.selections = selections;
         this.unitPrice = unitPrice;
     }
 
     public Long getId() { return id; }
-    public Long getCustomerId() { return customerId; }
+    public String getCartOwner() { return cartOwner; }
     public Vehicle getVehicle() { return vehicle; }
     public Map<String, String> getSelections() { return selections; }
     public BigDecimal getUnitPrice() { return unitPrice; }
